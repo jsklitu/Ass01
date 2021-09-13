@@ -31,22 +31,15 @@ namespace Assignment01
 
         public static IEnumerable<string> InnerText(string html, string tag)
         {
-            Regex extractTag = new Regex(@"<" + tag + @">(.*)<\/" + tag + @">");
-            Regex stripNestedTags = new Regex(@"<[^>]*>");
+            string expression = @"<(" + tag + @")\s*(.*?)>(?'innerText'.*?)<\/\1>";
+            var match = Regex.Match(html, expression);
+            
+            for(; match.Success ; match = match.NextMatch())
+            {
+                var groups = match.Groups;
 
-            String extractedString = extractTag.Match(html).ToString();
-            Match nestedMatch = stripNestedTags.Match(extractedString);
-
-            StringBuilder s = new StringBuilder();
-
-            for(; nestedMatch.Success ; nestedMatch = nestedMatch.NextMatch()) {
-                
-                s.Append(nestedMatch + " ");
-
-            }
-            var result = s.ToString(); 
-
-            yield return result;
+                yield return Regex.Replace(groups["innerText"].Value, "<.*?>", String.Empty);
+            }       
         }
     }
 }
